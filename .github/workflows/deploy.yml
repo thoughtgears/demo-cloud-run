@@ -119,7 +119,7 @@ jobs:
         with:
           service: ${{ matrix.service }}
           env_vars: |
-            GPC_PROJECT_ID=${{ needs.build.outputs.gcp_project_id }}
+            GCP_PROJECT_ID=${{ needs.build.outputs.gcp_project_id }}
             GCP_REGION=${{ needs.build.outputs.gcp_region }}
           image: ${{ needs.build.outputs.docker_repository }}/${{ matrix.service }}:${{ env.GIT_SHORT_SHA }}
           flags: '--no-allow-unauthenticated'
