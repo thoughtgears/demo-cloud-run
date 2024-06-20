@@ -5,7 +5,8 @@ output "docker_repository" {
 
 output "service_accounts" {
   value = {
-    for account_id, service in local.service_accounts : service => {
+    for account_id, sa in local.service_accounts :
+    sa.service => {
       email = google_service_account.this[account_id].email
     }
   }
