@@ -35,13 +35,13 @@ jobs:
       - name: Checkout repository
         uses: 'actions/checkout@v4'
 
-      #      - name: Retrieve Spacelift Stack Outputs
-      #        id: spacelift
-      #        uses: checkatrade/action-spacelift-output@v1
-      #        with:
-      #          spacelift_stack_id: ${{ env.STACK_ID }}
-      #          spacelift_key_id: ${{ secrets.CI_SPACELIFT_KEY_ID }}
-      #          spacelift_key_secret: ${{ secrets.CI_SPACELIFT_KEY_SECRET }}
+      - name: Retrieve Spacelift Stack Outputs
+        id: spacelift
+        uses: ./.github/actions/spacelift-outputs
+        with:
+          spacelift_stack_id: ${{ secrets.SPACELIFT_STACK_ID }}
+          spacelift_key_id: ${{ secrets.SPACELIFT_API_KEY_ID }}
+          spacelift_key_secret: ${{ secrets.SPACELIFT_API_KEY }}
 
       - name: Authenticate with Google Cloud
         id: auth
@@ -49,8 +49,8 @@ jobs:
         with:
           token_format: access_token
           project_id: ${{ steps.spacelift.outputs.gcp_project_id }}
-          workload_identity_provider: ${{ secrets.WIP_PROVIDER }}
-          service_account: ${{ secrets.WIP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
 
       - name: Login to GAR
         id: login_to_gar
