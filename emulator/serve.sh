@@ -21,7 +21,7 @@ for dir in "${dirs[@]}"; do
 done
 
 # Start Firebase emulators
-emulator_cmd="firebase emulators:start --project=${FIREBASE_PROJECT}"
+emulator_cmd="firebase emulators:start --project=${FIREBASE_PROJECT} --only=${FIREBASE_SERVICES:-firestore}"
 [[ -n "${DATA_DIRECTORY}" ]] && emulator_cmd+=" --import=./${DATA_DIRECTORY}/export --export-on-exit"
 $emulator_cmd &
 firebase_pid=$!

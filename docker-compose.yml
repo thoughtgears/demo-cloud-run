@@ -1,0 +1,50 @@
+services:
+  discovery:
+    image: python:3.12-slim
+    depends_on:
+      emulator:
+        condition: service_healthy
+    environment:
+      FIRESTORE_EMULATOR_HOST: "emulator:9081"
+      FIREBASE_PROJECT: "test-project"
+      GCP_PROJECT_ID: "test-project"
+    ports:
+      - "8000:8000"
+    links:
+      - emulator
+    volumes:
+      - ./services/discovery:/app:rw
+    working_dir: /app
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt && python main.py"
+
+  emulator:
+    build:
+      context: ./emulator
+      dockerfile: Dockerfile
+      args:
+        - FIREBASE_VERSION=13.11.2
+    stop_grace_period: 1m
+    environment:
+      FIRESTORE_EMULATOR_HOST: "127.0.0.1:8080"
+      FIREBASE_PROJECT: "test-project"
+      GCLOUD_PROJECT: "test-project"
+      FORCE_COLOR: 'true'
+      DATA_DIRECTORY: "data"
+      CHOKIDAR_USEPOLLING: 'true'
+    healthcheck:
+      test: "netstat -an | grep -c 4000"
+      interval: 20s
+      timeout: 20s
+      retries: 10
+    ports:
+      - "4000:4001" # ui
+      - "4400:4401" # hub
+      - "4600:4601" # logging
+      - "8080:8081" # firestore
+      - '8082:9081' # firestore (grpc)
+    volumes:
+      - ./firebase:/srv/firebase:rw
+      - ./cache:/root/.cache/:rw
+      - ~/.config/:/root/.config
+      - ./firebase/data:/srv/firebase/data:rw
