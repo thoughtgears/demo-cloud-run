@@ -33,7 +33,10 @@ jobs:
 
     strategy:
       matrix:
-        service: [ discovery ] # List all your services here
+        service: [ discovery ]
+        include:
+          - service: discovery
+            service_account: ${{ needs.build.outputs.discovery_run_service_account }}
 
     permissions:
       contents: read
@@ -137,7 +140,7 @@ jobs:
             '--timeout=300s'
             '--memory=256Mi'
             '--cpu=1'
-            '--service-account=${{ needs.build.outputs.discovery_run_service_account }}'
+            '--service-account=${{ matrix.service_account }}'
           project_id: ${{ needs.build.outputs.gcp_project_id }}
           region: ${{ needs.build.outputs.gcp_region }}
 
