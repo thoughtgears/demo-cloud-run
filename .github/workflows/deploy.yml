@@ -130,7 +130,14 @@ jobs:
             GCP_PROJECT_ID=${{ needs.build.outputs.gcp_project_id }}
             GCP_REGION=${{ needs.build.outputs.gcp_region }}
           image: ${{ needs.build.outputs.docker_repository }}/${{ matrix.service }}:${{ env.GIT_SHORT_SHA }}
-          flags: '--no-allow-unauthenticated'
+          flags: |
+            '--no-allow-unauthenticated'
+            '--max-instances=1'
+            '--concurrency=80'
+            '--timeout=300s'
+            '--memory=256Mi'
+            '--cpu=1'
+            '--service-account=${{ needs.build.outputs.discovery_run_service_account }}'
           project_id: ${{ needs.build.outputs.gcp_project_id }}
           region: ${{ needs.build.outputs.gcp_region }}
 
