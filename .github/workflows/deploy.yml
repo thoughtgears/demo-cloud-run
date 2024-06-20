@@ -31,9 +31,15 @@ jobs:
       contents: read
       id-token: write
 
+    outputs:
+      docker_repository: ${{ steps.spacelift.outputs.docker_repository }}
+      gcp_project_id: ${{ steps.spacelift.outputs.gcp_project_id }}
+      gcp_region: ${{ steps.spacelift.outputs.gcp_region }}
+      discovery_run_service_account: ${{ steps.spacelift.outputs.discovery_run_service_account }}
+
     steps:
       - name: Checkout repository
-        uses: 'actions/checkout@v4'
+        uses: actions/checkout@v4
 
       - name: Retrieve Spacelift Stack Outputs
         id: spacelift
@@ -45,7 +51,7 @@ jobs:
 
       - name: Authenticate with Google Cloud
         id: auth
-        uses: 'google-github-actions/auth@v2'
+        uses: google-github-actions/auth@v2
         with:
           token_format: access_token
           project_id: ${{ steps.spacelift.outputs.gcp_project_id }}
@@ -77,3 +83,43 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate with Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ needs.build.outputs.gcp_project_id }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set variables
+        run: |
+          echo "GIT_SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+
+      - name: Deploy services to cloud run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ matrix.service }}
+          env_vars: |
+            GPC_PROJECT_ID=${{ needs.build.outputs.gcp_project_id }}
+            GCP_REGION=${{ needs.build.outputs.gcp_region }}
+          image: ${{ needs.build.outputs.docker_repository }}/${{ matrix.service }}:${{ env.GIT_SHORT_SHA }}
+          flags: '--no-allow-unauthenticated'
+          project_id: ${{ needs.build.outputs.gcp_project_id }}
+          region: ${{ needs.build.outputs.gcp_region }}
+
+
