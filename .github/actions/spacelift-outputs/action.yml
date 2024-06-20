@@ -19,6 +19,8 @@ outputs:
     description: 'The GCP region'
   discovery_run_service_account:
     description: 'The service account to use for running the discovery service'
+  ipam_run_service_account:
+    description: 'The service account to use for running the IPAM service'
 
 runs:
   using: 'node20'

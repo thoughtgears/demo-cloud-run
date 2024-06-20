@@ -33,7 +33,7 @@ jobs:
 
     strategy:
       matrix:
-        service: [ discovery ] # List all your services here
+        service: [ discovery, ipam ] # List all your services here
 
     permissions:
       contents: read
@@ -44,6 +44,7 @@ jobs:
       gcp_project_id: ${{ steps.spacelift.outputs.gcp_project_id }}
       gcp_region: ${{ steps.spacelift.outputs.gcp_region }}
       discovery_run_service_account: ${{ steps.spacelift.outputs.discovery_run_service_account }}
+      ipam_run_service_account: ${{ steps.spacelift.outputs.ipam_run_service_account }}
 
     steps:
       - name: Checkout repository
@@ -98,10 +99,12 @@ jobs:
 
     strategy:
       matrix:
-        service: [ discovery ] # List all your services here
+        service: [ discovery, ipam ] # List all your services here
         include:
           - service: discovery
             service_account: ${{ needs.build.outputs.discovery_run_service_account }}
+          - service: ipam
+            service_account: ${{ needs.build.outputs.ipam_run_service_account }}
 
     permissions:
       contents: read
