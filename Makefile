@@ -8,7 +8,7 @@ DOCKER_REPO := "$(GCP_REGION)-docker.pkg.dev/$(GCP_PROJECT_ID)/platform"
 
 SERVICES := discovery
 
-.PHONY: build
+.PHONY: build push infra
 
 build:
 	$(foreach service, $(SERVICES), \
@@ -21,3 +21,8 @@ push: build
 		docker push $(DOCKER_REPO)/$(service):$(GIT_SHA); \
 		docker push $(DOCKER_REPO)/$(service):latest; \
 	)
+
+infra:
+	terraform -chdir=terraform init
+	terraform -chdir=terraform plan -out=tf.plan
+	terraform -chdir=terraform apply tf.plan
