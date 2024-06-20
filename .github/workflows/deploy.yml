@@ -33,10 +33,7 @@ jobs:
 
     strategy:
       matrix:
-        service: [ discovery ]
-        include:
-          - service: discovery
-            service_account: ${{ needs.build.outputs.discovery_run_service_account }}
+        service: [ discovery ] # List all your services here
 
     permissions:
       contents: read
@@ -102,6 +99,9 @@ jobs:
     strategy:
       matrix:
         service: [ discovery ] # List all your services here
+        include:
+          - service: discovery
+            service_account: ${{ needs.build.outputs.discovery_run_service_account }}
 
     permissions:
       contents: read
