@@ -88,6 +88,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        service: [ discovery ] # List all your services here
+
     permissions:
       contents: read
       id-token: write
