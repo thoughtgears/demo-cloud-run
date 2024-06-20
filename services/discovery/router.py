@@ -10,7 +10,7 @@ router = APIRouter()
 db = Firestore(project_id=gcp_project_id)
 
 
-@router.post("/service/", response_model=ServiceModel)
+@router.post("/service", response_model=ServiceModel)
 async def create_service(service: ServiceModel):
     try:
         created_service = db.create(service)
@@ -19,7 +19,7 @@ async def create_service(service: ServiceModel):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/service/", response_model=list[ServiceModel])
+@router.get("/service", response_model=list[ServiceModel])
 async def list_services():
     try:
         services = db.list()

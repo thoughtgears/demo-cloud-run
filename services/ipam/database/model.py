@@ -3,11 +3,17 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class ServiceModel(BaseModel):
-    id: Optional[str] = None
+class SubnetworkModel(BaseModel):
     name: str
-    description: Optional[str] = None
-    url: str = None
+    network_cidr: str
+    region: str
+
+
+class AddressModel(BaseModel):
+    id: Optional[str] = None
+    project_id: str
+    network: str
+    subnetworks: list[SubnetworkModel]
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 

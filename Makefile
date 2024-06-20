@@ -6,7 +6,7 @@ endif
 GIT_SHA := $(shell git rev-parse --short HEAD)
 DOCKER_REPO := "$(GCP_REGION)-docker.pkg.dev/$(GCP_PROJECT_ID)/platform"
 
-SERVICES := discovery
+SERVICES := discovery ipam
 
 .PHONY: build push infra
 

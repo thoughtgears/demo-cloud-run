@@ -1,0 +1,5 @@
+pydantic==2.*
+google-cloud-firestore==2.*
+google-cloud-resource-manager==1.*
+google-cloud-compute==1.*
+fastapi==0.*
