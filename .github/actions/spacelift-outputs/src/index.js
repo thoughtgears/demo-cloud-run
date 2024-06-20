@@ -8,9 +8,6 @@ async function runAction() {
     const keySecret = core.getInput('spacelift_key_secret', { required: true })
 
     const outputs = await getStackOutputs(keyId, keySecret, stackId)
-
-    console.log(outputs)
-
     core.setOutput('discovery_run_service_account', outputs['service_accounts']['discovery']['email'])
     core.setOutput('docker_repository', outputs['docker_repository'])
     core.setOutput('gcp_region', outputs['gcp_region'])
