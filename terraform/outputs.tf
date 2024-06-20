@@ -10,4 +10,15 @@ output "service_accounts" {
       email = google_service_account.this[account_id].email
     }
   }
+  description = "A map of service accounts and their email addresses"
+}
+
+output "gcp_project_id" {
+  value       = var.project_id
+  description = "The GCP project ID"
+}
+
+output "gcp_region" {
+  value       = var.region
+  description = "The GCP region"
 }

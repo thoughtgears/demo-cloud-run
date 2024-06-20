@@ -12,3 +12,5 @@ cache
 **/terraform.tfstate.backup
 **/*.tfvars
 **/tf.plan
+
+**/node_modules

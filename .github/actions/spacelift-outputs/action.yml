@@ -1,0 +1,25 @@
+name: 'Spacelift Outputs'
+description: 'Get outputs from Spacelift stack deployment'
+inputs:
+  spacelift_stack_id:
+    description: 'Spacelift Stack ID'
+    required: true
+  spacelift_key_id:
+    description: 'Spacelift Spacelift API key ID'
+    required: true
+  spacelift_key_secret:
+    description: 'Spacelift API key secret'
+    required: true
+outputs:
+  docker_repository:
+    description: 'The full URL of the artifact registry, to be concatenated with the docker image name'
+  gcp_project_id:
+    description: 'The GCP project ID'
+  gcp_region:
+    description: 'The GCP region'
+  discovery_run_service_account:
+    description: 'The service account to use for running the discovery service'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
