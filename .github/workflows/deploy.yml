@@ -118,6 +118,7 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ matrix.service }}
+          platform: managed
           env_vars: |
             GPC_PROJECT_ID=${{ needs.build.outputs.gcp_project_id }}
             GCP_REGION=${{ needs.build.outputs.gcp_region }}
