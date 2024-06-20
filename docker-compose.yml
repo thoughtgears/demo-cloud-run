@@ -27,7 +27,7 @@ services:
       FIRESTORE_EMULATOR_HOST: "emulator:9081"
       FIREBASE_PROJECT: "test-project"
       GCP_PROJECT_ID: "test-project"
-      GCP_ORGANIZATION_ID: "360603922284"
+      GCP_ORGANIZATION_ID: ${GCP_ORGANIZATION_ID}
       GOOGLE_APPLICATION_CREDENTIALS: "/app/.config/gcloud/application_default_credentials.json"
     ports:
       - "8001:8080"

@@ -8,7 +8,7 @@ DOCKER_REPO := "$(GCP_REGION)-docker.pkg.dev/$(GCP_PROJECT_ID)/platform"
 
 SERVICES := discovery ipam
 
-.PHONY: build push infra
+.PHONY: build push infra deploy
 
 build:
 	$(foreach service, $(SERVICES), \
@@ -26,3 +26,19 @@ infra:
 	terraform -chdir=terraform init
 	terraform -chdir=terraform plan -out=tf.plan
 	terraform -chdir=terraform apply tf.plan
+
+deploy: infra push
+	$(foreach service, $(SERVICES), \
+		gcloud run deploy $(service) \
+			--image $(DOCKER_REPO)/$(service):$(GIT_SHA) \
+			--region $(REGION) \
+			--concurrency 80 \
+			--max-instances 1 \
+			--timeout 300 \
+			--memory 256Mi \
+			--cpu 1 \
+			--service-account run-$(service)@$(GCP_PROJECT_ID).iam.gserviceaccount.com \
+			--project $(GCP_PROJECT_ID) \
+			--set-env-vars=GCP_PROJECT_ID=$(GCP_PROJECT_ID),GCP_REGION=$(GCP_REGION),GCP_ORGANIZATION_ID=$(GCP_ORGANIZATION_ID) \
+			--noallow-unauthenticated; \
+	)
