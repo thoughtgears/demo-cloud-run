@@ -12,12 +12,11 @@ resource "google_cloud_run_v2_service" "this" {
   project  = var.project_id
   location = var.region
   name     = each.value
+  ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
-    spec {
-      containers {
-        image = "us-docker.pkg.dev/cloudrun/container/hello"
-      }
+    containers {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
 
