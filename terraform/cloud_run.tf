@@ -6,6 +6,8 @@ locals {
   ]
 }
 
+# Just used for scaffolding service, not to manage the service
+# We manage the service in cloud build
 resource "google_cloud_run_v2_service" "this" {
   for_each = toset(local.services)
 
@@ -23,14 +25,4 @@ resource "google_cloud_run_v2_service" "this" {
   lifecycle {
     ignore_changes = all
   }
-}
-
-import {
-  id = "projects/${var.project_id}/locations/${var.region}/services/discovery"
-  to = google_cloud_run_v2_service.this["discovery"]
-}
-
-import {
-  id = "projects/${var.project_id}/locations/${var.region}/services/ipam"
-  to = google_cloud_run_v2_service.this["ipam"]
 }

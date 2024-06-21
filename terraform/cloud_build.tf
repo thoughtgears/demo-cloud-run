@@ -10,7 +10,7 @@ resource "google_secret_manager_secret" "github_pat_thoughtgears" {
   }
 }
 
-resource "google_secret_manager_secret_version" "github-token-secret-version" {
+resource "google_secret_manager_secret_version" "github_token_secret_version" {
   secret      = google_secret_manager_secret.github_pat_thoughtgears.id
   secret_data = var.github_pat
 }
@@ -36,12 +36,12 @@ resource "google_cloudbuildv2_connection" "github_thoughtgears" {
   github_config {
     app_installation_id = var.github_app_installation_id
     authorizer_credential {
-      oauth_token_secret_version = google_secret_manager_secret_version.github-token-secret-version.id
+      oauth_token_secret_version = google_secret_manager_secret_version.github_token_secret_version.id
     }
   }
 }
 
-resource "google_cloudbuildv2_repository" "demo-cloud-run" {
+resource "google_cloudbuildv2_repository" "demo_cloud_run" {
   project           = var.project_id
   location          = var.region
   name              = local.github_repo
@@ -50,6 +50,29 @@ resource "google_cloudbuildv2_repository" "demo-cloud-run" {
 }
 
 /*
-  Setup the Cloud Build trigger for the discovery service
+  Setup the Cloud Build trigger
  */
+resource "google_cloudbuild_trigger" "this" {
+  project  = var.project_id
+  location = var.region
 
+  repository_event_config {
+    repository = google_cloudbuildv2_repository.demo_cloud_run.id
+    push {
+      branch = "^main$"
+    }
+  }
+
+  service_account    = google_service_account.build_demo_cloud_build.id
+  filename           = "cloudbuild.yaml"
+  include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
+
+  depends_on = [
+    google_project_iam_member.build_demo_cloud_build_act_as,
+    google_project_iam_member.build_demo_cloud_build_app_engine_admin,
+    google_project_iam_member.build_demo_cloud_build_artifact_registry_admin,
+    google_project_iam_member.build_demo_cloud_build_logs_writer,
+    google_project_iam_member.build_demo_cloud_build_run_admin,
+    google_project_iam_member.build_demo_cloud_build_secret_manager_access
+  ]
+}
