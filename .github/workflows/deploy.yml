@@ -12,6 +12,7 @@ on:
       - Makefile
       - LICENSE
       - README.md
+      - resources/**
 
 jobs:
   wait-for-spacelift:

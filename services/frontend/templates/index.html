@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Items{% endblock %}
+{% block head %}
+<script>
+  $(document).ready(function() {
+    let page = 1
+    let per_page = 20
+    let loading = false
+
+    function loadItems() {
+      if (loading) return
+      loading = true
+      $.getJSON(`/items?page=${page}&per_page=${per_page}`, function(data) {
+        data.forEach(function(item) {
+          $('#items-grid').append(`
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">${item.name}</h5>
+                                <p class="card-text">${item.description}</p>
+                                <p class="card-text">Price: $${item.price}</p>
+                                <p class="card-text">Tax: $${item.tax}</p>
+                                <a href="/items/${item.id}" class="btn btn-primary">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                `)
+        })
+        loading = false
+      })
+    }
+
+    $(window).scroll(function() {
+      if ($(window).scrollTop() + $(window).height() >= $(document).height() - 10) {
+        page++
+        loadItems()
+      }
+    })
+
+    loadItems()
+  })
+</script>
+{% endblock %}
+{% block content %}
+<div class="row" id="items-grid">
+</div>
+{% endblock %}

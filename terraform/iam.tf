@@ -13,7 +13,18 @@ locals {
       service      = "ipam"
       display_name = "[RUN] IPAM"
       description  = "Service account for IPAM Cloud Run service"
-
+    }
+    "backend" = {
+      account_id   = "run-backend"
+      service      = "backend"
+      display_name = "[RUN] Backend"
+      description  = "Service account for backend Cloud Run service"
+    }
+    "frontend" = {
+      account_id   = "ae-frontend"
+      service      = "frontend"
+      display_name = "[AE] Frontend"
+      description  = "Service account for frontend App engine service"
     }
   }
 }

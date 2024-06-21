@@ -10,7 +10,7 @@ router = APIRouter()
 db = Firestore(project_id=gcp_project_id)
 
 
-@router.post("/service", response_model=ServiceModel)
+@router.post("/services", response_model=ServiceModel)
 async def create_service(service: ServiceModel):
     try:
         created_service = db.create(service)
@@ -19,7 +19,7 @@ async def create_service(service: ServiceModel):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/service", response_model=list[ServiceModel])
+@router.get("/services", response_model=list[ServiceModel])
 async def list_services():
     try:
         services = db.list()
@@ -28,7 +28,7 @@ async def list_services():
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@router.get("/service/{service_name}", response_model=ServiceModel)
+@router.get("/services/{service_name}", response_model=ServiceModel)
 async def get_service(service_name: str):
     try:
         service = db.get(service_name)
@@ -37,7 +37,7 @@ async def get_service(service_name: str):
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@router.put("/service/{service_name}", response_model=ServiceModel)
+@router.put("/services/{service_name}", response_model=ServiceModel)
 async def update_service(service_name: str, update_data: dict):
     try:
         updated_service = db.update(service_name, update_data)
@@ -46,7 +46,7 @@ async def update_service(service_name: str, update_data: dict):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.delete("/service/{service_name}")
+@router.delete("/services/{service_name}")
 async def delete_service(service_name: str):
     try:
         db.delete(service_name)

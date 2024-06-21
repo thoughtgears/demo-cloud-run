@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Item Details{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">{{ item.name }}</h5>
+    <p class="card-text">{{ item.description }}</p>
+    <p class="card-text">Price: ${{ item.price }}</p>
+    <p class="card-text">Tax: ${{ item.tax }}</p>
+    <a href="/items/{{ item.id }}/edit" class="btn btn-primary">Edit</a>
+    <form action="/items/{{ item.id }}/delete" method="post" class="d-inline">
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

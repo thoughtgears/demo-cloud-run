@@ -16,7 +16,7 @@ db = Firestore(project_id=gcp_project_id)
 search = Search(organization_id=gcp_organization_id)
 
 
-@router.get("/address", response_model=List[AddressModel])
+@router.get("/addresses", response_model=List[AddressModel])
 async def list_services(network_cidr: str = Query(None)):
     try:
         networks = db.list(network_cidr=network_cidr)
@@ -33,7 +33,7 @@ async def list_services(network_cidr: str = Query(None)):
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@router.delete("/address/{document_id}")
+@router.delete("/addresses/{document_id}")
 async def delete_service(document_id: str):
     try:
         db.delete(document_id)
