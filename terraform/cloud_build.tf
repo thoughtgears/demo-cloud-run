@@ -55,6 +55,9 @@ resource "google_cloudbuildv2_repository" "demo_cloud_run" {
 resource "google_cloudbuild_trigger" "this" {
   project  = var.project_id
   location = var.region
+  name     = "github-${local.github_owner}-${local.github_repo} deploy"
+
+  substitutions = {}
 
   repository_event_config {
     repository = google_cloudbuildv2_repository.demo_cloud_run.id
