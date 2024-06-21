@@ -57,7 +57,9 @@ resource "google_cloudbuild_trigger" "this" {
   location = var.region
   name     = "${local.github_repo}-deploy"
 
-  substitutions = {}
+  substitutions = {
+    _SPACELIFT_API_URL = "=https://thoughtgears.app.spacelift.io/graphql"
+  }
 
   repository_event_config {
     repository = google_cloudbuildv2_repository.demo_cloud_run.id

@@ -10,6 +10,13 @@ SERVICES := discovery ipam
 
 .PHONY: build push infra deploy
 
+run-script:
+	export SPACELIFT_API_KEY=$(SPACELIFT_API_KEY) && \
+	export SPACELIFT_API_KEY_ID=$(SPACELIFT_API_KEY_ID) && \
+	export SPACELIFT_STACK_ID=$(SPACELIFT_STACK_ID) && \
+	export SPACELIFT_API_URL=$(SPACELIFT_API_URL) && \
+	python resources/scripts/poll_spacelift_run.py
+
 build:
 	$(foreach service, $(SERVICES), \
 		docker build -t $(DOCKER_REPO)/$(service):$(GIT_SHA) ./services/$(service); \
