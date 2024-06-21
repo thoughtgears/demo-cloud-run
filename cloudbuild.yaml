@@ -1,6 +1,6 @@
 options:
   machineType: 'E2_MEDIUM'
-  logging: GCS_ONLY
+  logging: CLOUD_LOGGING_ONLY
 
 availableSecrets:
   secretManager:
