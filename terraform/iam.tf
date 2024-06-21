@@ -99,3 +99,9 @@ resource "google_project_iam_member" "build_demo_cloud_build_secret_manager_acce
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.build_demo_cloud_build.email}"
 }
+
+resource "google_project_iam_member" "build_demo_cloud_build_storage_admin" {
+  project = var.project_id
+  role    = "roles/storage.admin"
+  member  = "serviceAccount:${google_service_account.build_demo_cloud_build.email}"
+}
