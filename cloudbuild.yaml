@@ -16,18 +16,10 @@ substitutions:
 
 steps:
   - name: 'python'
-    id: 'install-dependencies'
-    dir: resources/scripts
-    entrypoint: 'python'
-    args: [ '-m', 'pip', 'install', '-r', 'requirements.txt' ]
-
-  - name: 'python'
     id: 'poll-spacelift-run'
-    waitFor:
-      - 'install-dependencies'
     dir: resources/scripts
     entrypoint: 'python'
-    args: [ 'poll_spacelift_run.py' ]
+    args: [ '-m', 'pip', 'install', '-r', 'requirements.txt', '&&', 'poll_spacelift_run.py' ]
     env:
       - SPACELIFT_API_URL=$_SPACELIFT_API_URL
     secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_API_KEY_ID', 'SPACELIFT_STACK_ID' ]
