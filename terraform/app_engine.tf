@@ -22,6 +22,11 @@ resource "google_iap_brand" "brand" {
   application_title = "Cloud IAP protected Application"
 }
 
+import {
+  id = "projects/${var.project_id}/brands/105849508967"
+  to = google_iap_brand.brand
+}
+
 resource "google_iap_client" "client" {
   display_name = "Default Client"
   brand        = google_iap_brand.brand.name
