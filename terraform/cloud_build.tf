@@ -61,6 +61,19 @@ resource "google_cloudbuild_trigger" "this" {
     _SPACELIFT_API_URL = "https://thoughtgears.app.spacelift.io/graphql"
   }
 
+  ignored_files = [
+    "README.md",
+    "LICENSE",
+    ".gitignore",
+    "docker-compose.yml",
+    "Makefile",
+    "pyproject.toml",
+    "terraform/**",
+    ".github/**",
+    "firebase/**",
+    "emulator/**"
+  ]
+
   repository_event_config {
     repository = google_cloudbuildv2_repository.demo_cloud_run.id
     push {

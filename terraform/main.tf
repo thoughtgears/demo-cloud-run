@@ -5,6 +5,8 @@ locals {
     "secretmanager.googleapis.com",
     "eventarc.googleapis.com",
     "firestore.googleapis.com",
+    "iap.googleapis.com",
+    "appengine.googleapis.com",
   ]
 
   labels = {
