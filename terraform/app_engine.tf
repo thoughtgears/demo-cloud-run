@@ -11,25 +11,24 @@ resource "google_app_engine_application" "frontend" {
   depends_on = [google_project_service.this["appengine.googleapis.com"]]
 }
 
+resource "google_project_service" "iap" {
+  project = var.project_id
+  service = "iap.googleapis.com"
+}
+
 resource "google_iap_brand" "brand" {
-  project           = var.project_id
+  project           = google_project_service.iap.project
   support_email     = "support@thoughtgears.co.uk"
   application_title = "Thoughtgears application"
-
-  depends_on = [google_project_service.this["iap.googleapis.com"]]
 }
 
 resource "google_iap_client" "client" {
   display_name = "Default Client"
   brand        = google_iap_brand.brand.name
-
-  depends_on = [google_project_service.this["iap.googleapis.com"]]
 }
 
 resource "google_iap_web_iam_member" "member" {
-  project = var.project_id
+  project = google_project_service.iap.project
   role    = "roles/iap.httpsResourceAccessor"
   member  = "domain:${local.github_owner}.co.uk"
-
-  depends_on = [google_project_service.this["iap.googleapis.com"]]
 }
