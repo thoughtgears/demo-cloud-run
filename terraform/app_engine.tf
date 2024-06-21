@@ -19,7 +19,7 @@ resource "google_project_service" "iap" {
 resource "google_iap_brand" "brand" {
   project           = google_project_service.iap.project
   support_email     = "support@thoughtgears.co.uk"
-  application_title = "Thoughtgears application"
+  application_title = "Cloud IAP protected Application"
 }
 
 resource "google_iap_client" "client" {
