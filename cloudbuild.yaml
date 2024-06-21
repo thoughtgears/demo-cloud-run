@@ -10,6 +10,8 @@ availableSecrets:
       env: 'SPACELIFT_API_KEY_ID'
     - versionName: projects/$PROJECT_ID/secrets/spacelift-stack-id/versions/latest
       env: 'SPACELIFT_STACK_ID'
+    - versionName: projects/$PROJECT_ID/secrets/gcp-organization-id/versions/latest
+      env: 'GCP_ORGANIZATION_ID'
 
 substitutions:
   _SPACELIFT_API_URL: https://thoughtgears.app.spacelift.io/graphql
@@ -94,6 +96,28 @@ steps:
       - 'push'
       - '--all-tags'
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demo/backend'
+
+      # Deploy all services
+  - name: 'gcr.io/cloud-builders/gcloud'
+    waitFor:
+      - 'push-discovery'
+    id: 'deploy-discovery'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'discovery'
+      - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:$SHORT_SHA'
+      - '--region=$LOCATION'
+      - '--project=$PROJECT_ID'
+      - '--no-allow-unauthenticated'
+      - '--max-instances=1'
+      - '--concurrency=80'
+      - '--memory=256Mi'
+      - '--cpu=1'
+      - '--service-account=run-discovery@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_ORGANIZATION_ID=$$GCP_ORGANIZATION_ID'
+    secretEnv: [ 'GCP_ORGANIZATION_ID' ]
 
 images:
   - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery'
