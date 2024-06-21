@@ -26,3 +26,20 @@ resource "google_cloud_run_v2_service" "this" {
     ignore_changes = all
   }
 }
+
+
+resource "google_cloud_run_v2_service_iam_member" "frontend_to_backend" {
+  project  = google_cloud_run_v2_service.this["backend"].project
+  location = google_cloud_run_v2_service.this["backend"].location
+  name     = google_cloud_run_v2_service.this["backend"].name
+  member   = "serviceAccount:${google_service_account.this["frontend"].email}"
+  role     = "roles/run.invoker"
+}
+
+resource "google_cloud_run_v2_service_iam_member" "frontend_to_discovery" {
+  project  = google_cloud_run_v2_service.this["discovery"].project
+  location = google_cloud_run_v2_service.this["discovery"].location
+  name     = google_cloud_run_v2_service.this["discovery"].name
+  member   = "serviceAccount:${google_service_account.this["frontend"].email}"
+  role     = "roles/run.invoker"
+}

@@ -4,10 +4,12 @@ import os
 
 app = Flask(__name__)
 
-discovery_url = os.getenv("DISCOVERY_URL", "http://discovery:8080")
-
-resp = requests.get(url=f"{discovery_url}/services/backend").json()
-backend_url = resp["url"]
+discovery_url = os.getenv("DISCOVERY_URL")
+if discovery_url:
+    resp = requests.get(url=f"{discovery_url}/services/backend").json()
+    backend_url = resp["url"]
+else:
+    backend_url = os.getenv("BACKEND_URL")
 
 
 @app.route("/")

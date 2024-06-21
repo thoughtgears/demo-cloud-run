@@ -1,0 +1,20 @@
+runtime: python312
+
+entrypoint: gunicorn -b :$PORT main:app
+
+env_variables:
+  BACKEND_URL: "https://backend-cfuetqwqnq-ew.a.run.app"
+
+handlers:
+  - url: /static
+    static_dir: static
+
+  - url: /.*
+    script: auto
+
+instance_class: F2
+automatic_scaling:
+  target_cpu_utilization: 0.65
+  target_throughput_utilization: 0.75
+  min_instances: 0
+  max_instances: 1
