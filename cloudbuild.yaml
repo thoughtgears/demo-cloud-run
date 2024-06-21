@@ -28,6 +28,7 @@ steps:
       - SPACELIFT_API_URL=$_SPACELIFT_API_URL
     secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_API_KEY_ID', 'SPACELIFT_STACK_ID' ]
 
+  # Build and push all images in an atomic way
   - name: 'gcr.io/cloud-builders/docker'
     waitFor:
       - 'poll-spacelift-run'
@@ -50,6 +51,52 @@ steps:
       - '--all-tags'
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery'
 
+  - name: 'gcr.io/cloud-builders/docker'
+    waitFor:
+      - 'poll-spacelift-run'
+    id: 'build-ipam'
+    dir: services/ipam
+    args:
+      - 'build'
+      - '-t'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam:latest'
+      - '-t'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam:$SHORT_SHA'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    waitFor:
+      - 'build-ipam'
+    id: 'push-ipam'
+    args:
+      - 'push'
+      - '--all-tags'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    waitFor:
+      - 'poll-spacelift-run'
+    id: 'build-backend'
+    dir: services/backend
+    args:
+      - 'build'
+      - '-t'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demo/backend:latest'
+      - '-t'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demo/backend:$SHORT_SHA'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    waitFor:
+      - 'build-backend'
+    id: 'push-backend'
+    args:
+      - 'push'
+      - '--all-tags'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demo/backend'
+
 images:
   - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery'
+  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam'
+  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demo/backend'
 
