@@ -158,6 +158,16 @@ steps:
       - '--cpu=1'
       - '--service-account=run-backend@$PROJECT_ID.iam.gserviceaccount.com'
 
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'deploy-frontend'
+    entrypoint: 'gcloud'
+    dir: services/frontend
+    args:
+      - 'app'
+      - 'deploy'
+      - 'app.yaml'
+      - '--quiet'
+
 images:
   - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery'
   - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam'
