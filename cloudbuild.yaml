@@ -97,7 +97,7 @@ steps:
       - '--all-tags'
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend'
 
-      # Deploy all services
+  # Deploy all services
   - name: 'gcr.io/cloud-builders/gcloud'
     waitFor:
       - 'push-discovery'
@@ -116,8 +116,47 @@ steps:
       - '--memory=256Mi'
       - '--cpu=1'
       - '--service-account=run-discovery@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    waitFor:
+      - 'push-ipam'
+    id: 'deploy-ipam'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'ipam'
+      - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam:$SHORT_SHA'
+      - '--region=$LOCATION'
+      - '--project=$PROJECT_ID'
+      - '--no-allow-unauthenticated'
+      - '--max-instances=1'
+      - '--concurrency=80'
+      - '--memory=256Mi'
+      - '--cpu=1'
+      - '--service-account=run-ipam@$PROJECT_ID.iam.gserviceaccount.com'
       - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_ORGANIZATION_ID=$$GCP_ORGANIZATION_ID'
     secretEnv: [ 'GCP_ORGANIZATION_ID' ]
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    waitFor:
+      - 'push-backend'
+    id: 'deploy-backend'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'backend'
+      - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend:$SHORT_SHA'
+      - '--region=$LOCATION'
+      - '--project=$PROJECT_ID'
+      - '--no-allow-unauthenticated'
+      - '--max-instances=1'
+      - '--concurrency=80'
+      - '--memory=256Mi'
+      - '--cpu=1'
+      - '--service-account=run-backend@$PROJECT_ID.iam.gserviceaccount.com'
 
 images:
   - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery'
