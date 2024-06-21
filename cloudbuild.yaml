@@ -18,8 +18,12 @@ steps:
   - name: 'python'
     id: 'poll-spacelift-run'
     dir: resources/scripts
-    entrypoint: 'python'
-    args: [ '-m', 'pip', 'install', '-r', 'requirements.txt', '&&', 'poll_spacelift_run.py' ]
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        pip install -r requirements.txt
+        python poll_spacelift_run.py
     env:
       - SPACELIFT_API_URL=$_SPACELIFT_API_URL
     secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_API_KEY_ID', 'SPACELIFT_STACK_ID' ]
