@@ -28,3 +28,14 @@ steps:
       - SPACELIFT_API_URL=$_SPACELIFT_API_URL
     secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_API_KEY_ID', 'SPACELIFT_STACK_ID' ]
 
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-discovery'
+    args: [ 'build', '-t', '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:latest', '-t', '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:SHORT_SHA', '-f', 'services/discovery/Dockerfile', '.' ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-discovery'
+    args: [ 'push', '--all-tags', '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery' ]
+
+images:
+  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery'
+
