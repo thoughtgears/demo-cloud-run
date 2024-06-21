@@ -12,6 +12,9 @@ locals {
     "terraform-repository" = "demo-cloud-run"
     "terraform-owner"      = "thoughtgears"
   }
+
+  github_owner = "thoughtgears"
+  github_repo  = "demo-cloud-run"
 }
 
 resource "google_project_service" "this" {
