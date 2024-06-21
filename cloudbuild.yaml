@@ -12,12 +12,10 @@ availableSecrets:
       env: 'SPACELIFT_STACK_ID'
 
 steps:
-  - name: 'ubuntu'
+  - name: 'python'
     id: 'poll-spacelift-run'
-    entrypoint: 'bash'
     dir: resources/scripts
-    args:
-      - 'python',
-      - 'poll_spacelift_run.py'
+    entrypoint: 'python'
+    args: [ 'poll_spacelift_run.py' ]
     secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_API_KEY_ID', 'SPACELIFT_STACK_ID' ]
 
