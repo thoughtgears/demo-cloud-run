@@ -16,7 +16,15 @@ substitutions:
 
 steps:
   - name: 'python'
+    id: 'install-dependencies'
+    dir: resources/scripts
+    entrypoint: 'python'
+    args: [ '-m', 'pip', 'install', '-r', 'requirements.txt' ]
+
+  - name: 'python'
     id: 'poll-spacelift-run'
+    waitFor:
+      - 'install-dependencies'
     dir: resources/scripts
     entrypoint: 'python'
     args: [ 'poll_spacelift_run.py' ]
