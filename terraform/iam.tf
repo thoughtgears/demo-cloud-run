@@ -96,6 +96,6 @@ resource "google_project_iam_member" "build_demo_cloud_build_app_engine_admin" {
 
 resource "google_project_iam_member" "build_demo_cloud_build_secret_manager_access" {
   project = var.project_id
-  role    = "roles/secretsmanager.secretAccessor"
+  role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.build_demo_cloud_build.email}"
 }

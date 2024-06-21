@@ -28,3 +28,18 @@ variable "github_app_installation_id" {
   type        = number
   description = "The GitHub app installation ID"
 }
+
+variable "spacelift_api_key" {
+  type        = string
+  description = "The Spacelift API key"
+}
+
+variable "spacelift_api_key_id" {
+  type        = string
+  description = "The Spacelift API key ID"
+}
+
+variable "spacelift_stack_id" {
+  type        = string
+  description = "The Spacelift stack ID"
+}
