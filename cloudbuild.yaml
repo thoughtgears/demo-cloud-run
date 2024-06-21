@@ -83,9 +83,9 @@ steps:
     args:
       - 'build'
       - '-t'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demo/backend:latest'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend:latest'
       - '-t'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demo/backend:$SHORT_SHA'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend:$SHORT_SHA'
       - '.'
 
   - name: 'gcr.io/cloud-builders/docker'
@@ -95,7 +95,7 @@ steps:
     args:
       - 'push'
       - '--all-tags'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demo/backend'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend'
 
       # Deploy all services
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -122,5 +122,5 @@ steps:
 images:
   - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery'
   - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam'
-  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demo/backend'
+  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend'
 
