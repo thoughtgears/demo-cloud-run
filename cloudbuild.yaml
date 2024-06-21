@@ -32,14 +32,13 @@ steps:
     waitFor:
       - 'poll-spacelift-run'
     id: 'build-discovery'
+    dir: services/discovery
     args:
       - 'build'
       - '-t'
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:latest'
       - '-t'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:SHORT_SHA'
-      - '-f'
-      - 'services/discovery/Dockerfile'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:$SHORT_SHA'
       - '.'
 
   - name: 'gcr.io/cloud-builders/docker'
