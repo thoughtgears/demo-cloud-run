@@ -42,6 +42,7 @@ resource "google_cloudbuildv2_connection" "github_thoughtgears" {
 }
 
 resource "google_cloudbuildv2_repository" "demo-cloud-run" {
+  project           = var.project_id
   location          = var.region
   name              = local.github_repo
   parent_connection = google_cloudbuildv2_connection.github_thoughtgears.name
