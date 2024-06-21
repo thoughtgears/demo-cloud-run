@@ -21,6 +21,10 @@ outputs:
     description: 'The service account to use for running the discovery service'
   ipam_run_service_account:
     description: 'The service account to use for running the IPAM service'
+  backend_run_service_account:
+    description: 'The service account to use for running the backend service'
+  frontend_ae_service_account:
+    description: 'The service account to use for running the frontend service'
 
 runs:
   using: 'node20'
