@@ -13,9 +13,10 @@ availableSecrets:
 
 substitutions:
   _SPACELIFT_API_URL: https://thoughtgears.app.spacelift.io/graphql
+  _DOCKER_PLATFORM: $LOCATION-docker.pkg.dev/$PROJECT_ID/platform
 
 steps:
-  - name: '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/poll-spacelift'
+  - name: '$_DOCKER_PLATFORM/poll-spacelift'
   - args:
       - '--spacelift-api-url=$_SPACELIFT_API_URL'
       - '----spacelift-api-key-id=$$SPACELIFT_API_KEY_ID'
