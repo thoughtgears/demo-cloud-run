@@ -25,10 +25,12 @@ locals {
       max_instance_count = 1
     }
     "ipam" = {
-      name = "ipam"
+      name            = "ipam"
+      repository_name = "platform"
     }
     "backend" = {
-      name = "backend"
+      name            = "backend"
+      repository_name = "platform"
     }
   }
 }
