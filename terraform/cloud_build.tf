@@ -108,6 +108,12 @@ resource "google_project_iam_member" "build_demo_cloud_build_storage_admin" {
   member  = "serviceAccount:${google_service_account.build_demo_cloud_build.email}"
 }
 
+resource "google_project_iam_member" "build_demo_cloud_build_registry_create_on_push" {
+  project = var.project_id
+  role    = "roles/artifactregistry.createOnPushRepoAdmin"
+  member  = "serviceAccount:${google_service_account.build_demo_cloud_build.email}"
+}
+
 /*
   Setup the Cloud Build Triggers to deploy the Cloud Run services
   INFO: The trigger will be triggered on a push to the main branch
@@ -219,6 +225,7 @@ resource "google_cloudbuild_trigger" "poll_spacelift" {
     google_project_iam_member.build_demo_cloud_build_artifact_registry_admin,
     google_project_iam_member.build_demo_cloud_build_logs_writer,
     google_project_iam_member.build_demo_cloud_build_run_admin,
-    google_project_iam_member.build_demo_cloud_build_secret_manager_access
+    google_project_iam_member.build_demo_cloud_build_secret_manager_access,
+    google_project_iam_member.build_demo_cloud_build_registry_create_on_push
   ]
 }
