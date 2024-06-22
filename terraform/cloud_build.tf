@@ -180,13 +180,9 @@ resource "google_cloudbuild_trigger" "services" {
   platform repo that can be reused in the services cloud build steps
  */
 resource "google_cloudbuild_trigger" "poll_spacelift" {
-  for_each = local.services
-
   project  = var.project_id
   location = var.region
   name     = "poll-spacelift-deploy"
-
-  substitutions = merge(local.global_substitutions, lookup(each.value, "substitutions", {}))
 
   ignored_files = [
     "README.md",
