@@ -20,7 +20,9 @@ locals {
 
   services = {
     "discovery" = {
-      name = "discovery"
+      name               = "discovery"
+      repository_name    = "demos"
+      max_instance_count = 1
     }
     "ipam" = {
       name = "ipam"

@@ -10,12 +10,39 @@ resource "google_cloud_run_v2_service" "this" {
 
   template {
     containers {
-      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/${each.value.repository_name}/${each.value.name}:latest"
+      resources {
+        limits = {
+          cpu    = "1000m"
+          memory = "256Mi"
+        }
+        cpu_idle = true
+      }
     }
+
+    scaling {
+      max_instance_count = lookup(each.value, "max_instance_count", 1)
+      min_instance_count = lookup(each.value, "min_instance_count", 0)
+    }
+
+    timeout                          = lookup(each.vale, "timeout", "300s")
+    service_account                  = google_service_account.this[each.key].email
+    max_instance_request_concurrency = lookup(each.value, "concurrency", 80)
   }
 
+  labels = merge(
+    local.labels,
+    {
+      gcb-trigger-id     = google_cloudbuild_trigger.services[each.key].trigger_id,
+      managed-by         = gcp-cloud-build-deploy-cloud-run,
+      gcp-trigger-region = var.region
+    }
+  )
+
   lifecycle {
-    ignore_changes = all
+    ignore_changes = [
+      template[0].containers[0].image
+    ]
   }
 }
 
