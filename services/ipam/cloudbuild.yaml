@@ -1,0 +1,53 @@
+options:
+  machineType: 'E2_MEDIUM'
+  logging: CLOUD_LOGGING_ONLY
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/spacelift-api-key/versions/latest
+      env: 'SPACELIFT_API_KEY'
+    - versionName: projects/$PROJECT_ID/secrets/spacelift-api-key-id/versions/latest
+      env: 'SPACELIFT_KEY_ID'
+    - versionName: projects/$PROJECT_ID/secrets/spacelift-stack-id/versions/latest
+      env: 'SPACELIFT_STACK_ID'
+
+tags:
+  - 'demo-services'
+  - 'platform'
+
+substitutions:
+  _SPACELIFT_API_URL: https://thoughtgears.app.spacelift.io/graphql
+  _SERVICE_NAME: 'ipam'
+
+steps:
+  - name: 'gcr.io/$PROJECT_ID/spacelift'
+    id: 'spacelift'
+    env:
+      - 'SPACELIFT_URL=$_SPACELIFT_API_URL'
+    secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_KEY_ID', 'SPACELIFT_STACK_ID' ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    waitFor: [ 'spacelift' ]
+    id: 'build'
+    dir: services/$_SERVICE_NAME
+    args: [ 'build', '-t', '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/$_SERVICE_NAME:latest', '-t', '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/$_SERVICE_NAME:$SHORT_SHA', '.' ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    waitFor: [ 'build' ]
+    id: 'push'
+    args: [ 'push', '--all-tags', '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/$_SERVICE_NAME' ]
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    waitFor: [ 'push' ]
+    id: 'deploy'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'services'
+      - 'update'
+      - '$_SERVICE_NAME'
+      - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/$_SERVICE_NAME:$SHORT_SHA'
+      - '--region=$LOCATION'
+      - '--project=$PROJECT_ID'
+
+
