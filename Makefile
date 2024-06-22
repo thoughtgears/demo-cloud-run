@@ -13,7 +13,6 @@ SERVICES := discovery ipam
 spacelift:
 	cd resources/cloud_build/spacelift && \
 	docker build -t gcr.io/$(GCP_PROJECT_ID)/spacelift . && \
-	docker push gcr.io/$(GCP_PROJECT_ID)/spacelift && \
 	docker run --rm -it gcr.io/$(GCP_PROJECT_ID)/spacelift --api-key $(SPACELIFT_API_KEY) --key-id $(SPACELIFT_API_KEY_ID) --stack-id $(SPACELIFT_STACK_ID) --url $(SPACELIFT_API_URL)
 
 build:
