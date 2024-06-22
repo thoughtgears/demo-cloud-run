@@ -42,6 +42,7 @@ steps:
     entrypoint: 'gcloud'
     args:
       - 'run'
+      - 'services'
       - 'update'
       - '$_SERVICE_NAME'
       - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/$_SERVICE_NAME:$SHORT_SHA'
