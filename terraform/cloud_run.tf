@@ -20,7 +20,7 @@ resource "google_cloud_run_v2_service" "this" {
       }
 
       dynamic "env" {
-        for_each = each.value.env
+        for_each = lookup(each.value, "env", {})
         content {
           name  = env.value.name
           value = env.value.value
