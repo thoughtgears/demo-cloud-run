@@ -1,175 +1,175 @@
-options:
-  machineType: 'E2_MEDIUM'
-  logging: CLOUD_LOGGING_ONLY
-
-availableSecrets:
-  secretManager:
-    - versionName: projects/$PROJECT_ID/secrets/spacelift-api-key/versions/latest
-      env: 'SPACELIFT_API_KEY'
-    - versionName: projects/$PROJECT_ID/secrets/spacelift-api-key-id/versions/latest
-      env: 'SPACELIFT_API_KEY_ID'
-    - versionName: projects/$PROJECT_ID/secrets/spacelift-stack-id/versions/latest
-      env: 'SPACELIFT_STACK_ID'
-    - versionName: projects/$PROJECT_ID/secrets/gcp-organization-id/versions/latest
-      env: 'GCP_ORGANIZATION_ID'
-
-substitutions:
-  _SPACELIFT_API_URL: https://thoughtgears.app.spacelift.io/graphql
-
-steps:
-  - name: 'python'
-    id: 'poll-spacelift-run'
-    dir: resources/scripts
-    entrypoint: bash
-    args:
-      - '-c'
-      - |
-        pip install -r requirements.txt
-        python poll_spacelift_run.py
-    env:
-      - SPACELIFT_API_URL=$_SPACELIFT_API_URL
-    secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_API_KEY_ID', 'SPACELIFT_STACK_ID' ]
-
-  # Build and push all images in an atomic way
-  - name: 'gcr.io/cloud-builders/docker'
-    waitFor:
-      - 'poll-spacelift-run'
-    id: 'build-discovery'
-    dir: services/discovery
-    args:
-      - 'build'
-      - '-t'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:latest'
-      - '-t'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:$SHORT_SHA'
-      - '.'
-
-  - name: 'gcr.io/cloud-builders/docker'
-    waitFor:
-      - 'build-discovery'
-    id: 'push-discovery'
-    args:
-      - 'push'
-      - '--all-tags'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery'
-
-  - name: 'gcr.io/cloud-builders/docker'
-    waitFor:
-      - 'poll-spacelift-run'
-    id: 'build-ipam'
-    dir: services/ipam
-    args:
-      - 'build'
-      - '-t'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam:latest'
-      - '-t'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam:$SHORT_SHA'
-      - '.'
-
-  - name: 'gcr.io/cloud-builders/docker'
-    waitFor:
-      - 'build-ipam'
-    id: 'push-ipam'
-    args:
-      - 'push'
-      - '--all-tags'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam'
-
-  - name: 'gcr.io/cloud-builders/docker'
-    waitFor:
-      - 'poll-spacelift-run'
-    id: 'build-backend'
-    dir: services/backend
-    args:
-      - 'build'
-      - '-t'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend:latest'
-      - '-t'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend:$SHORT_SHA'
-      - '.'
-
-  - name: 'gcr.io/cloud-builders/docker'
-    waitFor:
-      - 'build-backend'
-    id: 'push-backend'
-    args:
-      - 'push'
-      - '--all-tags'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend'
-
-  # Deploy all services
-  - name: 'gcr.io/cloud-builders/gcloud'
-    waitFor:
-      - 'push-discovery'
-    id: 'deploy-discovery'
-    entrypoint: 'gcloud'
-    args:
-      - 'run'
-      - 'deploy'
-      - 'discovery'
-      - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:$SHORT_SHA'
-      - '--region=$LOCATION'
-      - '--project=$PROJECT_ID'
-      - '--no-allow-unauthenticated'
-      - '--max-instances=1'
-      - '--concurrency=80'
-      - '--memory=256Mi'
-      - '--cpu=1'
-      - '--service-account=run-discovery@$PROJECT_ID.iam.gserviceaccount.com'
-      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    waitFor:
-      - 'push-ipam'
-    id: 'deploy-ipam'
-    entrypoint: 'gcloud'
-    args:
-      - 'run'
-      - 'deploy'
-      - 'ipam'
-      - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam:$SHORT_SHA'
-      - '--region=$LOCATION'
-      - '--project=$PROJECT_ID'
-      - '--no-allow-unauthenticated'
-      - '--max-instances=1'
-      - '--concurrency=80'
-      - '--memory=256Mi'
-      - '--cpu=1'
-      - '--service-account=run-ipam@$PROJECT_ID.iam.gserviceaccount.com'
-      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_ORGANIZATION_ID=$$GCP_ORGANIZATION_ID'
-    secretEnv: [ 'GCP_ORGANIZATION_ID' ]
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    waitFor:
-      - 'push-backend'
-    id: 'deploy-backend'
-    entrypoint: 'gcloud'
-    args:
-      - 'run'
-      - 'deploy'
-      - 'backend'
-      - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend:$SHORT_SHA'
-      - '--region=$LOCATION'
-      - '--project=$PROJECT_ID'
-      - '--no-allow-unauthenticated'
-      - '--max-instances=1'
-      - '--concurrency=80'
-      - '--memory=256Mi'
-      - '--cpu=1'
-      - '--service-account=run-backend@$PROJECT_ID.iam.gserviceaccount.com'
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    id: 'deploy-frontend'
-    entrypoint: 'gcloud'
-    dir: services/frontend
-    args:
-      - 'app'
-      - 'deploy'
-      - 'app.yaml'
-      - '--quiet'
-
-images:
-  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery'
-  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam'
-  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend'
-
+#options:
+#  machineType: 'E2_MEDIUM'
+#  logging: CLOUD_LOGGING_ONLY
+#
+#availableSecrets:
+#  secretManager:
+#    - versionName: projects/$PROJECT_ID/secrets/spacelift-api-key/versions/latest
+#      env: 'SPACELIFT_API_KEY'
+#    - versionName: projects/$PROJECT_ID/secrets/spacelift-api-key-id/versions/latest
+#      env: 'SPACELIFT_API_KEY_ID'
+#    - versionName: projects/$PROJECT_ID/secrets/spacelift-stack-id/versions/latest
+#      env: 'SPACELIFT_STACK_ID'
+#    - versionName: projects/$PROJECT_ID/secrets/gcp-organization-id/versions/latest
+#      env: 'GCP_ORGANIZATION_ID'
+#
+#substitutions:
+#  _SPACELIFT_API_URL: https://thoughtgears.app.spacelift.io/graphql
+#
+#steps:
+#  - name: 'python'
+#    id: 'poll-spacelift-run'
+#    dir: resources/scripts
+#    entrypoint: bash
+#    args:
+#      - '-c'
+#      - |
+#        pip install -r requirements.txt
+#        python poll_spacelift_run.py
+#    env:
+#      - SPACELIFT_API_URL=$_SPACELIFT_API_URL
+#    secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_API_KEY_ID', 'SPACELIFT_STACK_ID' ]
+#
+#  # Build and push all images in an atomic way
+#  - name: 'gcr.io/cloud-builders/docker'
+#    waitFor:
+#      - 'poll-spacelift-run'
+#    id: 'build-discovery'
+#    dir: services/discovery
+#    args:
+#      - 'build'
+#      - '-t'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:latest'
+#      - '-t'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:$SHORT_SHA'
+#      - '.'
+#
+#  - name: 'gcr.io/cloud-builders/docker'
+#    waitFor:
+#      - 'build-discovery'
+#    id: 'push-discovery'
+#    args:
+#      - 'push'
+#      - '--all-tags'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery'
+#
+#  - name: 'gcr.io/cloud-builders/docker'
+#    waitFor:
+#      - 'poll-spacelift-run'
+#    id: 'build-ipam'
+#    dir: services/ipam
+#    args:
+#      - 'build'
+#      - '-t'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam:latest'
+#      - '-t'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam:$SHORT_SHA'
+#      - '.'
+#
+#  - name: 'gcr.io/cloud-builders/docker'
+#    waitFor:
+#      - 'build-ipam'
+#    id: 'push-ipam'
+#    args:
+#      - 'push'
+#      - '--all-tags'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam'
+#
+#  - name: 'gcr.io/cloud-builders/docker'
+#    waitFor:
+#      - 'poll-spacelift-run'
+#    id: 'build-backend'
+#    dir: services/backend
+#    args:
+#      - 'build'
+#      - '-t'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend:latest'
+#      - '-t'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend:$SHORT_SHA'
+#      - '.'
+#
+#  - name: 'gcr.io/cloud-builders/docker'
+#    waitFor:
+#      - 'build-backend'
+#    id: 'push-backend'
+#    args:
+#      - 'push'
+#      - '--all-tags'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend'
+#
+#  # Deploy all services
+#  - name: 'gcr.io/cloud-builders/gcloud'
+#    waitFor:
+#      - 'push-discovery'
+#    id: 'deploy-discovery'
+#    entrypoint: 'gcloud'
+#    args:
+#      - 'run'
+#      - 'deploy'
+#      - 'discovery'
+#      - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery:$SHORT_SHA'
+#      - '--region=$LOCATION'
+#      - '--project=$PROJECT_ID'
+#      - '--no-allow-unauthenticated'
+#      - '--max-instances=1'
+#      - '--concurrency=80'
+#      - '--memory=256Mi'
+#      - '--cpu=1'
+#      - '--service-account=run-discovery@$PROJECT_ID.iam.gserviceaccount.com'
+#      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+#
+#  - name: 'gcr.io/cloud-builders/gcloud'
+#    waitFor:
+#      - 'push-ipam'
+#    id: 'deploy-ipam'
+#    entrypoint: 'gcloud'
+#    args:
+#      - 'run'
+#      - 'deploy'
+#      - 'ipam'
+#      - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam:$SHORT_SHA'
+#      - '--region=$LOCATION'
+#      - '--project=$PROJECT_ID'
+#      - '--no-allow-unauthenticated'
+#      - '--max-instances=1'
+#      - '--concurrency=80'
+#      - '--memory=256Mi'
+#      - '--cpu=1'
+#      - '--service-account=run-ipam@$PROJECT_ID.iam.gserviceaccount.com'
+#      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_ORGANIZATION_ID=$$GCP_ORGANIZATION_ID'
+#    secretEnv: [ 'GCP_ORGANIZATION_ID' ]
+#
+#  - name: 'gcr.io/cloud-builders/gcloud'
+#    waitFor:
+#      - 'push-backend'
+#    id: 'deploy-backend'
+#    entrypoint: 'gcloud'
+#    args:
+#      - 'run'
+#      - 'deploy'
+#      - 'backend'
+#      - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend:$SHORT_SHA'
+#      - '--region=$LOCATION'
+#      - '--project=$PROJECT_ID'
+#      - '--no-allow-unauthenticated'
+#      - '--max-instances=1'
+#      - '--concurrency=80'
+#      - '--memory=256Mi'
+#      - '--cpu=1'
+#      - '--service-account=run-backend@$PROJECT_ID.iam.gserviceaccount.com'
+#
+#  - name: 'gcr.io/cloud-builders/gcloud'
+#    id: 'deploy-frontend'
+#    entrypoint: 'gcloud'
+#    dir: services/frontend
+#    args:
+#      - 'app'
+#      - 'deploy'
+#      - 'app.yaml'
+#      - '--quiet'
+#
+#images:
+#  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/discovery'
+#  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/ipam'
+#  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/backend'
+#
