@@ -29,12 +29,12 @@ steps:
     waitFor: [ 'spacelift' ]
     id: 'build'
     dir: services/$_SERVICE_NAME
-    args: [ 'build', '-t', '$LOCATION-docker.pkg.dev/$PROJECT_ID/demo/$_SERVICE_NAME:latest', '-t', '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/$_SERVICE_NAME:$SHORT_SHA', '.' ]
+    args: [ 'build', '-t', '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/$_SERVICE_NAME:latest', '-t', '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/$_SERVICE_NAME:$SHORT_SHA', '.' ]
 
   - name: 'gcr.io/cloud-builders/docker'
     waitFor: [ 'build' ]
     id: 'push'
-    args: [ 'push', '--all-tags', '$LOCATION-docker.pkg.dev/$PROJECT_ID/demo/$_SERVICE_NAME' ]
+    args: [ 'push', '--all-tags', '$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/$_SERVICE_NAME' ]
 
   - name: 'gcr.io/cloud-builders/gcloud'
     waitFor: [ 'push' ]
@@ -42,16 +42,8 @@ steps:
     entrypoint: 'gcloud'
     args:
       - 'run'
-      - 'deploy'
+      - 'update'
       - '$_SERVICE_NAME'
       - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/demos/$_SERVICE_NAME:$SHORT_SHA'
-      - '--region=$LOCATION'
-      - '--project=$PROJECT_ID'
-      - '--no-allow-unauthenticated'
-      - '--max-instances=1'
-      - '--concurrency=80'
-      - '--memory=256Mi'
-      - '--cpu=1'
-      - '--service-account=run-$_SERVICE_NAME@$PROJECT_ID.iam.gserviceaccount.com'
 
 
