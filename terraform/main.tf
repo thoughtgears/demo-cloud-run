@@ -15,8 +15,20 @@ locals {
     "terraform-owner"      = "thoughtgears"
   }
 
-  github_owner = "thoughtgears"
-  github_repo  = "demo-cloud-run"
+  company     = "thoughtgears"
+  github_repo = "demo-cloud-run"
+
+  services = {
+    "discovery" = {
+      name = "discovery"
+    }
+    "ipam" = {
+      name = "ipam"
+    }
+    "backend" = {
+      name = "backend"
+    }
+  }
 }
 
 resource "google_project_service" "this" {

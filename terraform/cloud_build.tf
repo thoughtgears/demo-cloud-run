@@ -6,7 +6,7 @@
  */
 resource "google_secret_manager_secret" "github_pat_thoughtgears" {
   project   = var.project_id
-  secret_id = "github-pat-${local.github_owner}"
+  secret_id = "github-pat-${local.company}"
 
   replication {
     auto {}
@@ -38,7 +38,7 @@ resource "google_secret_manager_secret_iam_policy" "policy" {
 resource "google_cloudbuildv2_connection" "github_thoughtgears" {
   project  = var.project_id
   location = var.region
-  name     = "github-${local.github_owner}"
+  name     = "github-${local.company}"
 
   github_config {
     app_installation_id = var.github_app_installation_id
@@ -53,7 +53,7 @@ resource "google_cloudbuildv2_repository" "demo_cloud_run" {
   location          = var.region
   name              = local.github_repo
   parent_connection = google_cloudbuildv2_connection.github_thoughtgears.name
-  remote_uri        = "https://github.com/${local.github_owner}/${local.github_repo}.git"
+  remote_uri        = "https://github.com/${local.company}/${local.github_repo}.git"
 }
 
 /*
@@ -121,18 +121,6 @@ resource "google_project_iam_member" "build_demo_cloud_build_storage_admin" {
   those files matches a includedFiles glob. If not, then we do not trigger a build.
  */
 locals {
-  services = {
-    "discovery" = {
-      name = "discovery"
-    }
-    "ipam" = {
-      name = "ipam"
-    }
-    "backend" = {
-      name = "backend"
-    }
-  }
-
   global_substitutions = {
     _SPACELIFT_API_URL = "https://thoughtgears.app.spacelift.io/graphql"
   }

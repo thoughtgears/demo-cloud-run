@@ -35,5 +35,5 @@ resource "google_iap_client" "client" {
 resource "google_iap_web_iam_member" "member" {
   project = google_project_service.iap.project
   role    = "roles/iap.httpsResourceAccessor"
-  member  = "domain:${local.github_owner}.co.uk"
+  member  = "domain:${local.company}.co.uk"
 }
