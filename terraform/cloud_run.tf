@@ -25,6 +25,7 @@ resource "google_cloud_run_v2_service" "this" {
           name  = env.value.name
           value = env.value.value
         }
+      }
     }
 
     scaling {
