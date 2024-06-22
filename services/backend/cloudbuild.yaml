@@ -12,8 +12,10 @@ availableSecrets:
       env: 'SPACELIFT_STACK_ID'
 
 substitutions:
+  _LOCATION: $LOCATION
+  _PROJECT_ID: $PROJECT_ID
   _SPACELIFT_API_URL: https://thoughtgears.app.spacelift.io/graphql
-  _DOCKER_PLATFORM: $LOCATION-docker.pkg.dev/$PROJECT_ID/platform
+  _DOCKER_PLATFORM: $_LOCATION-docker.pkg.dev/$_PROJECT_ID/platform
 
 steps:
   - name: '$_DOCKER_PLATFORM/poll-spacelift'
