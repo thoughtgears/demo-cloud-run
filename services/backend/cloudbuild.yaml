@@ -18,7 +18,7 @@ steps:
   - name: '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/poll-spacelift'
   - args:
       - '--spacelift-api-url=$_SPACELIFT_API_URL'
-      - '----spacelift-api-key-id=$SPACELIFT_API_KEY_ID'
-      - '----spacelift-api-key=$SPACELIFT_API_KEY'
-      - '----spacelift-stack-id=$SPACELIFT_STACK_ID'
+      - '----spacelift-api-key-id=$$SPACELIFT_API_KEY_ID'
+      - '----spacelift-api-key=$$SPACELIFT_API_KEY'
+      - '----spacelift-stack-id=$$SPACELIFT_STACK_ID'
     secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_API_KEY_ID', 'SPACELIFT_STACK_ID' ]
