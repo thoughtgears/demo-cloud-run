@@ -21,8 +21,8 @@ steps:
   - name: 'gcr.io/$PROJECT_ID/spacelift'
     id: 'spacelift'
     args:
-      - '--spacelift-api-url=$_SPACELIFT_API_URL'
-      - '----spacelift-api-key-id=$$SPACELIFT_API_KEY_ID'
-      - '----spacelift-api-key=$$SPACELIFT_API_KEY'
-      - '----spacelift-stack-id=$$SPACELIFT_STACK_ID'
+      - '--url=$_SPACELIFT_API_URL'
+      - '--key-id=$$SPACELIFT_API_KEY_ID'
+      - '--api-key=$$SPACELIFT_API_KEY'
+      - '--stack-id=$$SPACELIFT_STACK_ID'
     secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_API_KEY_ID', 'SPACELIFT_STACK_ID' ]
