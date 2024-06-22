@@ -13,8 +13,8 @@ resource "google_cloud_run_v2_service" "this" {
       image = "${var.region}-docker.pkg.dev/${var.project_id}/${each.value.repository_name}/${each.value.name}:latest"
       resources {
         limits = {
-          cpu    = "1000m"
-          memory = "256Mi"
+          cpu    = lookup(each.value, "cpu_limit", "1000m")
+          memory = lookup(each.value, "memory_limit", "256Mi")
         }
         cpu_idle = true
       }
@@ -43,7 +43,7 @@ resource "google_cloud_run_v2_service" "this" {
     {
       gcb-trigger-id     = google_cloudbuild_trigger.services[each.key].trigger_id,
       managed-by         = "gcp-cloud-build-deploy-cloud-run",
-      gcp-trigger-region = var.region
+      gcb-trigger-region = var.region
     }
   )
 

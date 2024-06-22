@@ -13,6 +13,7 @@ availableSecrets:
 
 tags:
   - 'demo-services'
+  - 'backend'
 
 substitutions:
   _SPACELIFT_API_URL: https://thoughtgears.app.spacelift.io/graphql
