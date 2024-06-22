@@ -11,6 +11,6 @@ steps:
   - name: 'gcr.io/$PROJECT_ID/spacelift'
     id: 'spacelift'
     env:
-      - 'URL=$_SPACELIFT_API_URL'
+      - 'SPACELIFT_URL=$_SPACELIFT_URL'
     secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_KEY_ID', 'SPACELIFT_STACK_ID' ]
 ```
