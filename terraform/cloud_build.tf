@@ -182,7 +182,7 @@ resource "google_cloudbuild_trigger" "services" {
 resource "google_cloudbuild_trigger" "poll_spacelift" {
   project  = var.project_id
   location = var.region
-  name     = "poll-spacelift-deploy"
+  name     = "spacelift-deploy"
 
   ignored_files = [
     "README.md",
@@ -199,7 +199,7 @@ resource "google_cloudbuild_trigger" "poll_spacelift" {
   ]
 
   included_files = [
-    "resources/cloud_build/poll_spacelift/**"
+    "resources/cloud_build/spacelift/**"
   ]
 
   repository_event_config {
@@ -210,7 +210,7 @@ resource "google_cloudbuild_trigger" "poll_spacelift" {
   }
 
   service_account    = google_service_account.build_demo_cloud_build.id
-  filename           = "resources/cloud_build/poll_spacelift/cloudbuild.yaml"
+  filename           = "resources/cloud_build/spacelift/cloudbuild.yaml"
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
 
   depends_on = [

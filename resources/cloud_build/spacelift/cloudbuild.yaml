@@ -4,16 +4,16 @@ options:
 
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    id: 'build-poll-spacelift'
-    dir: resources/cloud_build/poll_spacelift
+    id: 'build-spacelift'
+    dir: resources/cloud_build/spacelift
     args:
       - 'build'
       - '-t'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/poll-spacelift'
+      - 'gcr.io/$PROJECT_ID/spacelift'
       - '.'
 
 images:
-  - '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/poll-spacelift'
+  - 'gcr.io/$PROJECT_ID/spacelift'
 tags:
   - 'cloud-build-builders'
   - 'v1'
