@@ -48,3 +48,29 @@ the proxy you can run the following command and it will create a proxy on `local
 ```bash
 gcloud run services proxy service-name --project your-project-id --region your-region
 ```
+
+## Deploying the applications
+
+### Local
+
+To deploy the applications locally you can use the `Makefile` to deploy the applications. To deploy the applications you can run the following command:
+
+```bash
+make all
+```
+
+This will deploy infrastructure with terraform and update the applications to Cloud Run.  
+To individually deploy the applications you can run the following commands:
+
+```bash
+make infra
+make backend
+make frontend
+make discovery
+make ipam
+```
+
+### Cloud build
+
+All files have a cloud build file and terraform sets up the cloud build triggers with a connected repo. It will also initially deploy the services to Cloud Run
+before cloud run can trigger installations.

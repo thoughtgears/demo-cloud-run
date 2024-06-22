@@ -11,4 +11,5 @@ steps:
       - 'app'
       - 'deploy'
       - 'app.yaml'
+      - '--project=$PROJECT_ID'
       - '--quiet'
