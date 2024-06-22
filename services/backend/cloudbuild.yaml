@@ -15,7 +15,7 @@ substitutions:
   _SPACELIFT_API_URL: https://thoughtgears.app.spacelift.io/graphql
 
 steps:
-  - name: '$REGION-docker.pkg.dev/$PROJECT_ID/platform/poll-spacelift'
+  - name: '$LOCATION-docker.pkg.dev/$PROJECT_ID/platform/poll-spacelift'
   - args:
       - '--spacelift-api-url=$_SPACELIFT_API_URL'
       - '----spacelift-api-key-id=$SPACELIFT_API_KEY_ID'
