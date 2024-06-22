@@ -1,3 +1,6 @@
 Flask==3.*
 requests==2.*
 gunicorn==22.*
+google-auth==2.*
+google-auth-oauthlib==1.*
+google-auth-httplib2==0.*
