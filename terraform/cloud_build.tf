@@ -179,6 +179,40 @@ resource "google_cloudbuild_trigger" "services" {
   ]
 }
 
+/* Build trigger for the frontend application */
+resource "google_cloudbuild_trigger" "frontend" {
+  project  = var.project_id
+  location = var.region
+  name     = "frontend-deploy"
+
+  ignored_files = concat(local.global_ignored_files, ["resources/**"])
+  included_files = [
+    "services/frontend/**"
+  ]
+
+  repository_event_config {
+    repository = google_cloudbuildv2_repository.demo_cloud_run.id
+    push {
+      branch = "^main$"
+    }
+  }
+
+  service_account    = google_service_account.build_demo_cloud_build.id
+  filename           = "services/frontend/cloudbuild.yaml"
+  include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
+
+  depends_on = [
+    google_project_iam_member.build_demo_cloud_build_act_as,
+    google_project_iam_member.build_demo_cloud_build_app_engine_admin,
+    google_project_iam_member.build_demo_cloud_build_artifact_registry_admin,
+    google_project_iam_member.build_demo_cloud_build_logs_writer,
+    google_project_iam_member.build_demo_cloud_build_run_admin,
+    google_project_iam_member.build_demo_cloud_build_secret_manager_access,
+    google_project_iam_member.build_demo_cloud_build_storage_admin,
+    google_project_iam_member.build_demo_cloud_build_registry_create_on_push
+  ]
+}
+
 /*
   Build trigger for a custom build step that we should use in our Service runs
   This will build a custom docker container and push to the Artifact Registry
