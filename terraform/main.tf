@@ -21,16 +21,40 @@ locals {
   services = {
     "discovery" = {
       name               = "discovery"
-      repository_name    = "demos"
+      repository_name    = "platform"
       max_instance_count = 1
+      env = {
+        "GCP_PROJECT_ID" = {
+          name  = "GCP_PROJECT_ID"
+          value = var.project_id
+        },
+        "GCP_REGION" = {
+          name  = "GCP_REGION"
+          value = var.region
+        }
+      }
     }
     "ipam" = {
       name            = "ipam"
       repository_name = "platform"
+      env = {
+        "GCP_PROJECT_ID" = {
+          name  = "GCP_PROJECT_ID"
+          value = var.project_id
+        },
+        "GCP_REGION" = {
+          name  = "GCP_REGION"
+          value = var.region
+        },
+        "GCP_ORGANIZATION_ID" = {
+          name  = "GCP_ORGANIZATION_ID"
+          value = var.organization_id
+        }
+      }
     }
     "backend" = {
       name            = "backend"
-      repository_name = "platform"
+      repository_name = "demos"
     }
   }
 }

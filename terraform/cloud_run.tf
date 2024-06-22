@@ -18,6 +18,13 @@ resource "google_cloud_run_v2_service" "this" {
         }
         cpu_idle = true
       }
+
+      dynamic "env" {
+        for_each = each.value.env
+        content {
+          name  = env.value.name
+          value = env.value.value
+        }
     }
 
     scaling {
