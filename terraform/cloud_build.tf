@@ -130,6 +130,19 @@ locals {
   global_substitutions = {
     _SPACELIFT_API_URL = "https://thoughtgears.app.spacelift.io/graphql"
   }
+
+  global_ignored_files = [
+    "**/README.md",
+    "LICENSE",
+    ".gitignore",
+    "docker-compose.yml",
+    "Makefile",
+    "pyproject.toml",
+    "terraform/**",
+    ".github/**",
+    "firebase/**",
+    "emulator/**",
+  ]
 }
 
 resource "google_cloudbuild_trigger" "services" {
@@ -140,21 +153,7 @@ resource "google_cloudbuild_trigger" "services" {
   name     = "${each.value.name}-deploy"
 
   substitutions = merge(local.global_substitutions, lookup(each.value, "substitutions", {}))
-
-  ignored_files = [
-    "README.md",
-    "LICENSE",
-    ".gitignore",
-    "docker-compose.yml",
-    "Makefile",
-    "pyproject.toml",
-    "terraform/**",
-    ".github/**",
-    "firebase/**",
-    "emulator/**",
-    "resources/**"
-  ]
-
+  ignored_files = concat(local.global_ignored_files, ["resources/**"])
   included_files = [
     "services/${each.value.name}/**"
   ]
@@ -190,20 +189,7 @@ resource "google_cloudbuild_trigger" "poll_spacelift" {
   location = var.region
   name     = "spacelift-deploy"
 
-  ignored_files = [
-    "README.md",
-    "LICENSE",
-    ".gitignore",
-    "docker-compose.yml",
-    "Makefile",
-    "pyproject.toml",
-    "terraform/**",
-    ".github/**",
-    "firebase/**",
-    "emulator/**",
-    "services/**"
-  ]
-
+  ignored_files = concat(local.global_ignored_files, ["services/**"])
   included_files = [
     "resources/cloud_build/spacelift/**"
   ]
