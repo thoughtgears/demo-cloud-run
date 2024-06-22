@@ -10,12 +10,11 @@ SERVICES := discovery ipam
 
 .PHONY: build push infra deploy
 
-run-script:
-	export SPACELIFT_API_KEY=$(SPACELIFT_API_KEY) && \
-	export SPACELIFT_API_KEY_ID=$(SPACELIFT_API_KEY_ID) && \
-	export SPACELIFT_STACK_ID=$(SPACELIFT_STACK_ID) && \
-	export SPACELIFT_API_URL=$(SPACELIFT_API_URL) && \
-	python resources/scripts/poll_spacelift_run.py
+spacelift:
+	cd resources/cloud_build/spacelift && \
+	docker build -t gcr.io/$(GCP_PROJECT_ID)/spacelift . && \
+	docker push gcr.io/$(GCP_PROJECT_ID)/spacelift && \
+	docker run --rm -it gcr.io/$(GCP_PROJECT_ID)/spacelift --api-key $(SPACELIFT_API_KEY) --key-id $(SPACELIFT_API_KEY_ID) --stack-id $(SPACELIFT_STACK_ID) --url $(SPACELIFT_API_URL)
 
 build:
 	$(foreach service, $(SERVICES), \

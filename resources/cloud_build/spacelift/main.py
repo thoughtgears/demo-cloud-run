@@ -56,15 +56,15 @@ def get_run_status(url, key_id, key_secret, stack_id):
 
 
 @click.command()
-@click.option("--spacelift-api-url", required=True, help="The Spacelift API URL.")
-@click.option("--spacelift-api-key-id", required=True, help="The Spacelift API key ID.")
-@click.option("--spacelift-api-key", required=True, help="The Spacelift API key secret.")
-@click.option("--spacelift-stack-id", required=True, help="The Spacelift stack ID.")
-def main(space_lift_api_url, spacelift_key_id, spacelift_key, spacelift_stack_id):
+@click.option("--url", required=True, help="The Spacelift API URL.")
+@click.option("--key-id", required=True, help="The Spacelift API key ID.")
+@click.option("--api-key", required=True, help="The Spacelift API key secret.")
+@click.option("--stack-id", required=True, help="The Spacelift stack ID.")
+def main(url, key_id, api_key, stack_id):
     failure_states = {"FAILED", "SKIPPED", "STOPPED", "DISCARDED", "CANCELED"}
 
     while True:
-        finished, state = get_run_status(space_lift_api_url, spacelift_key_id, spacelift_key, spacelift_stack_id)
+        finished, state = get_run_status(url, key_id, api_key, stack_id)
 
         if state in failure_states:
             print(f"Run failed with state: {state}")
