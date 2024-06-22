@@ -22,6 +22,7 @@ steps:
   - name: 'gcr.io/$PROJECT_ID/spacelift'
     id: 'spacelift'
     args: [ '--url=$_SPACELIFT_API_URL', '--key-id=$$SPACELIFT_API_KEY_ID', '--api-key=$$SPACELIFT_API_KEY', '--stack-id=$$SPACELIFT_STACK_ID' ]
+    secretEnv: [ 'SPACELIFT_API_KEY', 'SPACELIFT_API_KEY_ID', 'SPACELIFT_STACK_ID' ]
 
   - name: 'gcr.io/cloud-builders/docker'
     waitFor: [ 'spacelift' ]
