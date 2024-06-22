@@ -2,14 +2,13 @@ options:
   machineType: 'E2_MEDIUM'
   logging: CLOUD_LOGGING_ONLY
 
+tags:
+  - 'demo-services'
+  - 'frontend'
+
 steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'deploy-frontend'
     entrypoint: 'gcloud'
     dir: services/frontend
-    args:
-      - 'app'
-      - 'deploy'
-      - 'app.yaml'
-      - '--project=$PROJECT_ID'
-      - '--quiet'
+    args: [ 'app', 'deploy', 'app.yaml', '--project', $PROJECT_ID, '--quiet' ]
