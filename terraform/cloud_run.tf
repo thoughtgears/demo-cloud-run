@@ -25,7 +25,7 @@ resource "google_cloud_run_v2_service" "this" {
       min_instance_count = lookup(each.value, "min_instance_count", 0)
     }
 
-    timeout                          = lookup(each.vale, "timeout", "300s")
+    timeout                          = lookup(each.value, "timeout", "300s")
     service_account                  = google_service_account.this[each.key].email
     max_instance_request_concurrency = lookup(each.value, "concurrency", 80)
   }
@@ -34,7 +34,7 @@ resource "google_cloud_run_v2_service" "this" {
     local.labels,
     {
       gcb-trigger-id     = google_cloudbuild_trigger.services[each.key].trigger_id,
-      managed-by         = gcp-cloud-build-deploy-cloud-run,
+      managed-by         = "gcp-cloud-build-deploy-cloud-run",
       gcp-trigger-region = var.region
     }
   )
